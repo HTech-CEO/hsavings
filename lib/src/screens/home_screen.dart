@@ -165,12 +165,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               children: [
                                 const SizedBox(height: 6),
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: const [
-                                    ActionButton(icon: Icons.add, label: 'Receita', color: Color.fromARGB(255, 5, 141, 75)),
-                                    ActionButton(icon: Icons.receipt_long_outlined, label: 'Despesa', color: Color(0xFFEA5F5F)),
-                                    ActionButton(icon: Icons.savings, label: 'Poupar', color: Color(0xFF007BFF)),
-                                    ActionButton(icon: Icons.account_balance_wallet, label: 'Investir', color: Color.fromARGB(255, 95, 5, 241)),
+                                    Expanded(child: ActionButton(icon: Icons.add, label: 'Rendimento', color: Color.fromARGB(255, 5, 141, 75))),
+                                    Expanded(child: ActionButton(icon: Icons.receipt_long_outlined, label: 'Despesa', color: Color(0xFFEA5F5F))),
+                                    Expanded(child: ActionButton(icon: Icons.savings, label: 'Poupar', color: Color(0xFF007BFF))),
+                                    Expanded(child: ActionButton(icon: Icons.account_balance_wallet, label: 'Investir', color: Color.fromARGB(255, 95, 5, 241))),
                                   ],
                                 ),
                                 const SizedBox(height: 18),
@@ -217,7 +216,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           Row(
             children: [
               _OverviewItem(
-                label: 'Receitas',
+                label: 'Rendimentos',
                 value: '€ 12.750,00',
                 color: const Color.fromARGB(255, 5, 141, 75),
                 onTap: () {},
@@ -237,22 +236,34 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               _OverviewItem(
                 label: 'Poupanças',
                 value: '€ 12.750,00',
-                color: Color(0xFF007BFF),
+                color: const Color(0xFF007BFF),
                 onTap: () {},
               ),
               const SizedBox(width: 18),
               _OverviewItem(
                 label: 'Investimentos',
                 value: '€ 4.107,81',
-                color: Color.fromARGB(255, 95, 5, 241),
+                color: const Color.fromARGB(255, 95, 5, 241),
                 onTap: () {},
               ),
             ],
           ),
           const SizedBox(height: 18),
-          Text('Saldo do mês', style: TextStyle(color: theme.colorScheme.onSurfaceVariant, fontWeight: FontWeight.w500)),
-          const SizedBox(height: 8),
-          Text('€ 8.642,19', style: TextStyle(color: theme.colorScheme.onSurface, fontSize: 22, fontWeight: FontWeight.w700)),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              color: const Color(0xFF1F8D67).withValues(alpha: 0.08),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Saldo do mês', style: TextStyle(color: theme.colorScheme.onSurfaceVariant, fontWeight: FontWeight.w600)),
+                Text('€ 200,00', style: TextStyle(color: const Color(0xFF1F8D67), fontWeight: FontWeight.w800)),
+              ],
+            ),
+          ),
           const SizedBox(height: 12),
           Container(
             height: 60,
@@ -462,9 +473,6 @@ class _OverviewItemState extends State<_OverviewItem> with SingleTickerProviderS
                   color: isDark ? const Color(0xFF11151D) : theme.colorScheme.surface,
                   borderRadius: BorderRadius.circular(18),
                   border: Border.all(color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0x3D)),
-                  gradient: LinearGradient(
-                    colors: [widget.color.withValues(alpha: 0.16), theme.colorScheme.primary.withValues(alpha: 0.06)],
-                  ),
                 ),
                 child: child,
               );
@@ -472,9 +480,23 @@ class _OverviewItemState extends State<_OverviewItem> with SingleTickerProviderS
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(widget.label, style: TextStyle(color: theme.colorScheme.onSurface.withValues(alpha: 0.88), fontWeight: FontWeight.w600, fontSize: 13)),
+                Text(
+                  widget.label,
+                  style: TextStyle(
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.88),
+                    fontWeight: FontWeight.w600,
+                    fontSize: 13,
+                  ),
+                ),
                 const SizedBox(height: 10),
-                Text(widget.value, style: TextStyle(color: widget.color.withValues(alpha: 0x1F), fontWeight: FontWeight.w700, fontSize: 16)),
+                Text(
+                  widget.value,
+                  style: TextStyle(
+                    color: widget.color,
+                    fontWeight: FontWeight.w800,
+                    fontSize: 16,
+                  ),
+                ),
               ],
             ),
           ),

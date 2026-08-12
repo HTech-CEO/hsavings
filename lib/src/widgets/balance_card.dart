@@ -63,7 +63,7 @@ class BalanceCard extends StatelessWidget {
                       onTap: onMorePressed,
                       child: const Padding(
                         padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                        child: Icon(Icons.more_horiz, color: Colors.white, size: 16),
+                        child: Icon(Icons.remove_red_eye, color: Colors.white, size: 16),
                       ),
                     ),
                   ),

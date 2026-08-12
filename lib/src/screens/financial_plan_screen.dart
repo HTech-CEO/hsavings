@@ -113,6 +113,7 @@ class _FinancialPlanScreenState extends State<FinancialPlanScreen>
           PlanCategoryTemplate(id: 'leisure', label: 'Lazer', icon: Icons.movie_filter_rounded, color: Color(0xFFFFC857)),
           PlanCategoryTemplate(id: 'shopping', label: 'Compras', icon: Icons.shopping_bag_rounded, color: Color(0xFFB98BFF)),
           PlanCategoryTemplate(id: 'health', label: 'Saúde', icon: Icons.medical_services_outlined, color: Color(0xFF6ED3C5)),
+          PlanCategoryTemplate(id: 'transport', label: 'Transporte', icon: Icons.directions_car_rounded, color: Color(0xFFFF8A65)),
           PlanCategoryTemplate(id: 'travel', label: 'Viagens', icon: Icons.flight_takeoff_rounded, color: Color(0xFF46A5FF)),
           PlanCategoryTemplate(id: 'other', label: 'Diversos', icon: Icons.more_horiz_rounded, color: Color(0xFF95A5A6)),
         ];
@@ -186,6 +187,30 @@ class _FinancialPlanScreenState extends State<FinancialPlanScreen>
     return (_lines[group] ?? []).fold<double>(0, (sum, line) => sum + line.amount);
   }
 
+  double _sumAllOtherGroupsExcept(PlanGroupType currentGroup, {String? currentLineId}) {
+    double total = 0;
+
+    for (final group in PlanGroupType.values) {
+      if (group == currentGroup) {
+        final lines = _lines[group] ?? const [];
+        for (final line in lines) {
+          if (line.id != currentLineId) {
+            total += line.amount;
+          }
+        }
+        continue;
+      }
+
+      total += _sumGroup(group);
+    }
+
+    return total;
+  }
+
+  double availableFor(PlanGroupType group, {String? lineId}) {
+    return remainingBalance;
+  }
+
   double get totalIncome => _sumGroup(PlanGroupType.income);
   double get totalInvestments => _sumGroup(PlanGroupType.investment);
   double get totalSavings => _sumGroup(PlanGroupType.saving);
@@ -201,7 +226,7 @@ class _FinancialPlanScreenState extends State<FinancialPlanScreen>
 
   List<PieChartSectionData> get chartSections {
     final values = <({String label, double value, Color color})>[
-      (label: 'Receitas', value: totalIncome, color: const Color(0xFF14B87A)),
+      (label: 'Rendimentos', value: totalIncome, color: const Color(0xFF14B87A)),
       (label: 'Investimentos', value: totalInvestments, color: const Color(0xFF7C4DFF)),
       (label: 'Poupanças', value: totalSavings, color: const Color(0xFF1A73E8)),
       (label: 'Despesas fixas', value: totalFixedExpenses, color: const Color(0xFFEA4F5D)),
@@ -284,7 +309,7 @@ class _FinancialPlanScreenState extends State<FinancialPlanScreen>
                             children: [
                               Expanded(
                                 child: _SummaryCard(
-                                  label: 'Receita total',
+                                  label: 'Rendimentos totais',
                                   value: '€ ${totalIncome.toStringAsFixed(2).replaceAll('.', ',')}',
                                   color: const Color(0xFF14B87A),
                                 ),
@@ -317,9 +342,11 @@ class _FinancialPlanScreenState extends State<FinancialPlanScreen>
                           children: [
                             const SizedBox(height: 10),
                             _CategoryGroupCard(
-                              title: 'Receitas',
+                              title: 'Rendimentos',
                               groupType: PlanGroupType.income,
                               lines: _lines[PlanGroupType.income] ?? const [],
+                              availableBalance: remainingBalance,
+                              balanceForLine: (_) => remainingBalance,
                               onAdd: () => _addLine(PlanGroupType.income),
                               onRemove: (lineId) => _removeLine(lineId, PlanGroupType.income),
                               onAmountChanged: (lineId, value) => _updateLineAmount(lineId, PlanGroupType.income, value),
@@ -330,6 +357,8 @@ class _FinancialPlanScreenState extends State<FinancialPlanScreen>
                               title: 'Investimentos',
                               groupType: PlanGroupType.investment,
                               lines: _lines[PlanGroupType.investment] ?? const [],
+                              availableBalance: remainingBalance,
+                              balanceForLine: (_) => remainingBalance,
                               onAdd: () => _addLine(PlanGroupType.investment),
                               onRemove: (lineId) => _removeLine(lineId, PlanGroupType.investment),
                               onAmountChanged: (lineId, value) => _updateLineAmount(lineId, PlanGroupType.investment, value),
@@ -340,6 +369,8 @@ class _FinancialPlanScreenState extends State<FinancialPlanScreen>
                               title: 'Poupanças',
                               groupType: PlanGroupType.saving,
                               lines: _lines[PlanGroupType.saving] ?? const [],
+                              availableBalance: remainingBalance,
+                              balanceForLine: (_) => remainingBalance,
                               onAdd: () => _addLine(PlanGroupType.saving),
                               onRemove: (lineId) => _removeLine(lineId, PlanGroupType.saving),
                               onAmountChanged: (lineId, value) => _updateLineAmount(lineId, PlanGroupType.saving, value),
@@ -350,6 +381,8 @@ class _FinancialPlanScreenState extends State<FinancialPlanScreen>
                               title: 'Despesas fixas',
                               groupType: PlanGroupType.fixedExpense,
                               lines: _lines[PlanGroupType.fixedExpense] ?? const [],
+                              availableBalance: remainingBalance,
+                              balanceForLine: (_) => remainingBalance,
                               onAdd: () => _addLine(PlanGroupType.fixedExpense),
                               onRemove: (lineId) => _removeLine(lineId, PlanGroupType.fixedExpense),
                               onAmountChanged: (lineId, value) => _updateLineAmount(lineId, PlanGroupType.fixedExpense, value),
@@ -360,6 +393,8 @@ class _FinancialPlanScreenState extends State<FinancialPlanScreen>
                               title: 'Despesas variáveis',
                               groupType: PlanGroupType.variableExpense,
                               lines: _lines[PlanGroupType.variableExpense] ?? const [],
+                              availableBalance: remainingBalance,
+                              balanceForLine: (_) => remainingBalance,
                               onAdd: () => _addLine(PlanGroupType.variableExpense),
                               onRemove: (lineId) => _removeLine(lineId, PlanGroupType.variableExpense),
                               onAmountChanged: (lineId, value) => _updateLineAmount(lineId, PlanGroupType.variableExpense, value),
@@ -508,7 +543,7 @@ class _PlanChartCard extends StatelessWidget {
                 spacing: 12,
                 runSpacing: 8,
                 children: const [
-                  _LegendChip(label: 'Receitas', color: Color(0xFF14B87A)),
+                  _LegendChip(label: 'Rendimentos', color: Color(0xFF14B87A)),
                   _LegendChip(label: 'Investimentos', color: Color(0xFF7C4DFF)),
                   _LegendChip(label: 'Poupanças', color: Color(0xFF1A73E8)),
                   _LegendChip(label: 'Despesas fixas', color: Color(0xFFEA4F5D)),
@@ -563,6 +598,8 @@ class _CategoryGroupCard extends StatelessWidget {
   final String title;
   final PlanGroupType groupType;
   final List<PlanLine> lines;
+  final double availableBalance;
+  final double Function(String lineId) balanceForLine;
   final VoidCallback onAdd;
   final Function(String) onRemove;
   final Function(String, String) onAmountChanged;
@@ -572,6 +609,8 @@ class _CategoryGroupCard extends StatelessWidget {
     required this.title,
     required this.groupType,
     required this.lines,
+    required this.availableBalance,
+    required this.balanceForLine,
     required this.onAdd,
     required this.onRemove,
     required this.onAmountChanged,
@@ -596,12 +635,33 @@ class _CategoryGroupCard extends StatelessWidget {
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text(title, style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16, color: theme.colorScheme.onSurface)),
-              IconButton.filled(
+              Text(
+                title,
+                style: TextStyle(
+                  fontWeight: FontWeight.w800,
+                  fontSize: 16,
+                  color: theme.colorScheme.onSurface,
+                ),
+              ),
+              IconButton(
                 onPressed: onAdd,
-                icon: const Icon(Icons.add),
                 tooltip: 'Nova linha',
+                icon: const Icon(Icons.add_rounded, size: 20),
+                style: ButtonStyle(
+                  minimumSize: WidgetStatePropertyAll(const Size(36, 36)),
+                  padding: WidgetStatePropertyAll(EdgeInsets.zero),
+                  backgroundColor: WidgetStatePropertyAll(
+                    theme.colorScheme.primary.withValues(alpha: 0.10),
+                  ),
+                  foregroundColor: WidgetStatePropertyAll(theme.colorScheme.primary),
+                  shape: WidgetStatePropertyAll(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
               ),
             ],
           ),
@@ -622,6 +682,7 @@ class _CategoryGroupCard extends StatelessWidget {
                   child: _PlanLineEditor(
                     line: line,
                     templates: templates,
+                    availableBalance: balanceForLine(line.id),
                     onRemove: () => onRemove(line.id),
                     onAmountChanged: (value) => onAmountChanged(line.id, value),
                     onTemplateChanged: (value) => onTemplateChanged(line.id, value),
@@ -656,11 +717,11 @@ class _CategoryGroupCard extends StatelessWidget {
         ];
       case PlanGroupType.fixedExpense:
         return const [
-          PlanCategoryTemplate(id: 'rent_house', label: 'Aluguel', icon: Icons.home_rounded, color: Color(0xFFEA4F5D)),
+          PlanCategoryTemplate(id: 'rent_house', label: 'Renda', icon: Icons.home_rounded, color: Color(0xFFEA4F5D)),
           PlanCategoryTemplate(id: 'utilities', label: 'Internet / Luz', icon: Icons.lightbulb_outline_rounded, color: Color(0xFFF7956A)),
           PlanCategoryTemplate(id: 'insurance', label: 'Seguros', icon: Icons.security_rounded, color: Color(0xFF9B5DE5)),
           PlanCategoryTemplate(id: 'loan', label: 'Empréstimo', icon: Icons.payments_rounded, color: Color(0xFFDB4D87)),
-          PlanCategoryTemplate(id: 'subscriptions', label: 'Assinaturas', icon: Icons.subscriptions_rounded, color: Color(0xFF5F7AFF)),
+          PlanCategoryTemplate(id: 'subscriptions', label: 'Subscrições', icon: Icons.subscriptions_rounded, color: Color(0xFF5F7AFF)),
           PlanCategoryTemplate(id: 'transport_fix', label: 'Transporte fixo', icon: Icons.directions_car_rounded, color: Color(0xFFFF8A65)),
         ];
       case PlanGroupType.variableExpense:
@@ -669,6 +730,7 @@ class _CategoryGroupCard extends StatelessWidget {
           PlanCategoryTemplate(id: 'leisure', label: 'Lazer', icon: Icons.movie_filter_rounded, color: Color(0xFFFFC857)),
           PlanCategoryTemplate(id: 'shopping', label: 'Compras', icon: Icons.shopping_bag_rounded, color: Color(0xFFB98BFF)),
           PlanCategoryTemplate(id: 'health', label: 'Saúde', icon: Icons.medical_services_outlined, color: Color(0xFF6ED3C5)),
+          PlanCategoryTemplate(id: 'transport', label: 'Transporte', icon: Icons.directions_car_rounded, color: Color(0xFFFF8A65)),
           PlanCategoryTemplate(id: 'travel', label: 'Viagens', icon: Icons.flight_takeoff_rounded, color: Color(0xFF46A5FF)),
           PlanCategoryTemplate(id: 'other', label: 'Diversos', icon: Icons.more_horiz_rounded, color: Color(0xFF95A5A6)),
         ];
@@ -679,6 +741,7 @@ class _CategoryGroupCard extends StatelessWidget {
 class _PlanLineEditor extends StatelessWidget {
   final PlanLine line;
   final List<PlanCategoryTemplate> templates;
+  final double availableBalance;
   final VoidCallback onRemove;
   final ValueChanged<String> onAmountChanged;
   final ValueChanged<String> onTemplateChanged;
@@ -686,6 +749,7 @@ class _PlanLineEditor extends StatelessWidget {
   const _PlanLineEditor({
     required this.line,
     required this.templates,
+    required this.availableBalance,
     required this.onRemove,
     required this.onAmountChanged,
     required this.onTemplateChanged,
@@ -764,12 +828,44 @@ class _PlanLineEditor extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 10),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+            decoration: BoxDecoration(
+              color: availableBalance >= 0
+                  ? const Color(0xFF1F8D67).withValues(alpha: 0.08)
+                  : const Color(0xFFEA4F5D).withValues(alpha: 0.08),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Saldo disponível',
+                  style: TextStyle(
+                    color: theme.colorScheme.onSurfaceVariant,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 11,
+                  ),
+                ),
+                Text(
+                  '€ ${availableBalance.toStringAsFixed(2).replaceAll('.', ',')}',
+                  style: TextStyle(
+                    color: availableBalance >= 0 ? const Color(0xFF1F8D67) : const Color(0xFFEA4F5D),
+                    fontWeight: FontWeight.w800,
+                    fontSize: 11,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 8),
           TextFormField(
             initialValue: line.amount == 0 ? '' : line.amount.toStringAsFixed(2).replaceAll('.', ','),
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
             style: const TextStyle(fontSize: 13),
             decoration: InputDecoration(
-              hintText: 'Valor em €',
+              hintText: '€ 0,00',
               prefixText: '€ ',
               filled: true,
               fillColor: theme.colorScheme.surface,
