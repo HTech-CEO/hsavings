@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 class ActionButton extends StatelessWidget {
   final IconData icon;
   final String label;
-
+  final Color color;
+  
   const ActionButton({
     super.key,
     required this.icon,
     required this.label,
+    required this.color,
   });
 
   @override
@@ -24,6 +26,9 @@ class ActionButton extends StatelessWidget {
             color: isDark ? const Color(0xFF11151D) : theme.colorScheme.surface,
             borderRadius: BorderRadius.circular(18),
             border: Border.all(color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0x3D)),
+            gradient: LinearGradient(
+              colors: [color.withValues(alpha: 0.16), theme.colorScheme.primary.withValues(alpha: 0.06)],
+            ),
             boxShadow: const [
               BoxShadow(
                 color: Color(0x0A000000),
@@ -32,7 +37,7 @@ class ActionButton extends StatelessWidget {
               ),
             ],
           ),
-          child: Icon(icon, size: 24, color: theme.colorScheme.primary),
+          child: Icon(icon, size: 24, color: color),
         ),
         const SizedBox(height: 8),
         SizedBox(

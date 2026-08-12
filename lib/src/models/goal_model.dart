@@ -15,5 +15,5 @@ class SavingGoal {
 
   double get progress => (collected / target).clamp(0, 1);
   String get progressLabel => '${(progress * 100).round()}%';
-  String get targetLabel => 'R\$${collected.toStringAsFixed(0)} / R\$${target.toStringAsFixed(0)}';
+  String get targetLabel => '€${collected.toStringAsFixed(0)} / €${target.toStringAsFixed(0)}';
 }

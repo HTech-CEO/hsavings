@@ -22,6 +22,6 @@ class TransactionModel {
   });
 
   String get formattedAmount {
-    return '${type == TransactionType.income ? '+' : '-'}R\$${amount.toStringAsFixed(2)}';
+    return '${type == TransactionType.income ? '+' : '-'}€${amount.toStringAsFixed(2)}';
   }
 }

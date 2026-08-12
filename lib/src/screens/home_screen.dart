@@ -5,6 +5,7 @@ import '../widgets/action_button.dart';
 import '../widgets/balance_card.dart';
 import '../widgets/goal_card.dart';
 import '../widgets/transaction_tile.dart';
+import 'financial_plan_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -59,143 +60,137 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     ));
 
     return Scaffold(
-      extendBody: false,
+      extendBody: true,
       backgroundColor: theme.scaffoldBackgroundColor,
-      body: Container(
-        color: const Color(0xFF174380),
-        child: SafeArea(
-          bottom: false,
-          child: Column(
-            children: [
-              Container(
-                decoration: const BoxDecoration(
-                  color: Color(0xFF174380),
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(32),
-                    bottomRight: Radius.circular(32),
-                  ),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 18),
-                  child: FadeTransition(
-                    opacity: _headerAnimation,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: const [
-                                  Text('Olá, Gabriel 👋',
-                                      style: TextStyle(
-                                        fontSize: 24,
-                                        fontWeight: FontWeight.w700,
-                                        color: Colors.white,
-                                      )),
-                                  SizedBox(height: 4),
-                                  Text('Que bom te ver por aqui!',
-                                      style: TextStyle(
-                                        fontSize: 13,
-                                        color: Color(0xCCFFFFFF),
-                                      )),
-                                ],
-                              ),
-                            ),
-                            Container(
-                              width: 48,
-                              height: 48,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                image: const DecorationImage(
-                                  image: NetworkImage('https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=256&q=80'),
-                                  fit: BoxFit.cover,
-                                ),
-                                border: Border.all(color: Colors.white.withValues(alpha: 0xEB), width: 2),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withValues(alpha: 0x14),
-                                    blurRadius: 12,
-                                    offset: const Offset(0, 4),
+      body: selectedIndex == 2
+          ? const FinancialPlanScreen()
+          : Container(
+              color: const Color(0xFF174380),
+              child: SafeArea(
+                bottom: false,
+                child: Column(
+                  children: [
+                    Container(
+                      decoration: const BoxDecoration(
+                        color: Color(0xFF174380),
+                        borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(32),
+                          bottomRight: Radius.circular(32),
+                        ),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(20, 20, 20, 18),
+                        child: FadeTransition(
+                          opacity: _headerAnimation,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: const [
+                                        Text('Olá, Gabriel 👋',
+                                            style: TextStyle(
+                                              fontSize: 24,
+                                              fontWeight: FontWeight.w700,
+                                              color: Colors.white,
+                                            )),
+                                        SizedBox(height: 4),
+                                        Text('Que bom te ver por aqui!',
+                                            style: TextStyle(
+                                              fontSize: 13,
+                                              color: Color(0xCCFFFFFF),
+                                            )),
+                                      ],
+                                    ),
+                                  ),
+                                  Container(
+                                    width: 48,
+                                    height: 48,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      image: const DecorationImage(
+                                        image: NetworkImage('https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=256&q=80'),
+                                        fit: BoxFit.cover,
+                                      ),
+                                      border: Border.all(color: Colors.white.withValues(alpha: 0xEB), width: 2),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withValues(alpha: 0x14),
+                                          blurRadius: 12,
+                                          offset: const Offset(0, 4),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ],
                               ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 14),
-                        BalanceCard(
-                          balance: totalBalance,
-                          monthlyChange: monthlyGrowth,
-                          onMorePressed: () {},
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              Expanded(
-                child: TweenAnimationBuilder<Offset>(
-                  duration: const Duration(milliseconds: 700),
-                  tween: Tween(begin: const Offset(0, 0.05), end: Offset.zero),
-                  builder: (context, offset, child) {
-                    return Transform.translate(
-                      offset: offset * 100,
-                      child: child,
-                    );
-                  },
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.surface,
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(32),
-                        topRight: Radius.circular(32),
-                      ),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
-                      child: ListView(
-                        physics: const BouncingScrollPhysics(),
-                        padding: const EdgeInsets.only(bottom: 140),
-                        children: [
-                          const SizedBox(height: 6),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: const [
-                              ActionButton(icon: Icons.swap_horiz, label: 'Transferir'),
-                              ActionButton(icon: Icons.qr_code_scanner, label: 'Pagar'),
-                              ActionButton(icon: Icons.receipt_long, label: 'Cobrar'),
-                              ActionButton(icon: Icons.add, label: 'Mais'),
+                              const SizedBox(height: 14),
+                              BalanceCard(
+                                balance: totalBalance,
+                                monthlyChange: monthlyGrowth,
+                                onMorePressed: () {},
+                              ),
                             ],
                           ),
-                          const SizedBox(height: 18),
-                          _buildOverviewCard(theme),
-                          const SizedBox(height: 18),
-                          _buildRecentTransactions(theme),
-                          const SizedBox(height: 18),
-                          GoalCard(goal: recentGoal),
-                          const SizedBox(height: 96),
-                        ],
+                        ),
                       ),
                     ),
-                  ),
+                    Expanded(
+                      child: TweenAnimationBuilder<Offset>(
+                        duration: const Duration(milliseconds: 700),
+                        tween: Tween(begin: const Offset(0, 0.05), end: Offset.zero),
+                        builder: (context, offset, child) {
+                          return Transform.translate(
+                            offset: offset * 100,
+                            child: child,
+                          );
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.surface,
+                            borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(32),
+                              topRight: Radius.circular(32),
+                            ),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+                            child: ListView(
+                              physics: const BouncingScrollPhysics(),
+                              padding: const EdgeInsets.only(bottom: 140),
+                              children: [
+                                const SizedBox(height: 6),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: const [
+                                    ActionButton(icon: Icons.add, label: 'Receita', color: Color.fromARGB(255, 5, 141, 75)),
+                                    ActionButton(icon: Icons.receipt_long_outlined, label: 'Despesa', color: Color(0xFFEA5F5F)),
+                                    ActionButton(icon: Icons.savings, label: 'Poupar', color: Color(0xFF007BFF)),
+                                    ActionButton(icon: Icons.account_balance_wallet, label: 'Investir', color: Color.fromARGB(255, 95, 5, 241)),
+                                  ],
+                                ),
+                                const SizedBox(height: 18),
+                                _buildOverviewCard(theme),
+                                const SizedBox(height: 18),
+                                _buildRecentTransactions(theme),
+                                const SizedBox(height: 18),
+                                GoalCard(goal: recentGoal),
+                                const SizedBox(height: 96),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ],
-          ),
-        ),
-      ),
-      bottomNavigationBar: SafeArea(
-        top: false,
-        bottom: true,
-        child: Container(
-          color: isDark ? const Color(0xFF11151D) : Colors.white,
-          width: double.infinity,
-          child: _buildBottomNavigation(theme),
-        ),
-      ),
+            ),
+      bottomNavigationBar: _buildBottomNavigation(theme),
     );
   }
 
@@ -223,14 +218,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             children: [
               _OverviewItem(
                 label: 'Receitas',
-                value: 'R\$ 12.750,00',
+                value: '€ 12.750,00',
                 color: const Color.fromARGB(255, 5, 141, 75),
                 onTap: () {},
               ),
               const SizedBox(width: 18),
               _OverviewItem(
                 label: 'Despesas',
-                value: 'R\$ 4.107,81',
+                value: '€ 4.107,81',
                 color: const Color(0xFFEA5F5F),
                 onTap: () {},
               ),
@@ -241,14 +236,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             children: [
               _OverviewItem(
                 label: 'Poupanças',
-                value: 'R\$ 12.750,00',
-                color: Color.fromARGB(255, 241, 186, 3),
+                value: '€ 12.750,00',
+                color: Color(0xFF007BFF),
                 onTap: () {},
               ),
               const SizedBox(width: 18),
               _OverviewItem(
                 label: 'Investimentos',
-                value: 'R\$ 4.107,81',
+                value: '€ 4.107,81',
                 color: Color.fromARGB(255, 95, 5, 241),
                 onTap: () {},
               ),
@@ -257,7 +252,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           const SizedBox(height: 18),
           Text('Saldo do mês', style: TextStyle(color: theme.colorScheme.onSurfaceVariant, fontWeight: FontWeight.w500)),
           const SizedBox(height: 8),
-          Text('R\$ 8.642,19', style: TextStyle(color: theme.colorScheme.onSurface, fontSize: 22, fontWeight: FontWeight.w700)),
+          Text('€ 8.642,19', style: TextStyle(color: theme.colorScheme.onSurface, fontSize: 22, fontWeight: FontWeight.w700)),
           const SizedBox(height: 12),
           Container(
             height: 60,
@@ -289,27 +284,37 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   Widget _buildRecentTransactions(ThemeData theme) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text('Transações recentes', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16, color: theme.colorScheme.onSurface)),
-            GestureDetector(
-              onTap: () {},
-              child: Text('Ver todas', style: TextStyle(color: theme.colorScheme.primary, fontWeight: FontWeight.w600)),
-            ),
-          ],
-        ),
-        const SizedBox(height: 14),
-        ...recentTransactions.map(
-          (transaction) => Padding(
-            padding: const EdgeInsets.only(bottom: 12),
-            child: TransactionTile(transaction: transaction),
+    final isDark = theme.brightness == Brightness.dark;
+
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0x3D)),
+        color: isDark ? const Color(0xFF11151D) : theme.colorScheme.surface,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text('Transações recentes', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16, color: theme.colorScheme.onSurface)),
+              GestureDetector(
+                onTap: () {},
+                child: Text('Ver todas', style: TextStyle(color: theme.colorScheme.primary, fontWeight: FontWeight.w600)),
+              ),
+            ],
           ),
-        ),
-      ],
+          const SizedBox(height: 14),
+          ...recentTransactions.map(
+            (transaction) => Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: TransactionTile(transaction: transaction),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -317,20 +322,22 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     final isDark = theme.brightness == Brightness.dark;
     final items = const [
       _NavigationItem(label: 'Início', icon: Icons.home),
-      _NavigationItem(label: 'Resumo', icon: Icons.pie_chart_outline),
-      _NavigationItem(label: 'Nova', icon: Icons.attach_money_rounded),
-      _NavigationItem(label: 'Investimentos', icon: Icons.bar_chart),
-      _NavigationItem(label: 'Mais', icon: Icons.menu),
+      _NavigationItem(label: 'Resumo', icon: Icons.insert_chart_outlined),
+      _NavigationItem(label: 'Plano', icon: Icons.pie_chart_outline),
+      _NavigationItem(label: 'Menu', icon: Icons.menu),
     ];
 
-    return Container(
+    final bottomInset = MediaQuery.of(context).padding.bottom;
+
+    final nav = Container(
+      padding: EdgeInsets.zero,
       decoration: BoxDecoration(
         color: isDark ? const Color(0xFF11151D) : theme.colorScheme.surface,
         borderRadius: const BorderRadius.only(topLeft: Radius.circular(24), topRight: Radius.circular(24)),
         boxShadow: [BoxShadow(color: theme.colorScheme.shadow.withValues(alpha: 0x14), blurRadius: 18, offset: const Offset(0, -4))],
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+        padding: const EdgeInsets.only(left: 8, right: 8, top: 6, bottom: 8),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: List.generate(items.length, (index) {
@@ -365,6 +372,16 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           }),
         ),
       ),
+    );
+
+    final filler = Container(
+      height: bottomInset,
+      color: isDark ? const Color(0xFF11151D) : Colors.white,
+    );
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [nav, filler],
     );
   }
 }
@@ -445,6 +462,9 @@ class _OverviewItemState extends State<_OverviewItem> with SingleTickerProviderS
                   color: isDark ? const Color(0xFF11151D) : theme.colorScheme.surface,
                   borderRadius: BorderRadius.circular(18),
                   border: Border.all(color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0x3D)),
+                  gradient: LinearGradient(
+                    colors: [widget.color.withValues(alpha: 0.16), theme.colorScheme.primary.withValues(alpha: 0.06)],
+                  ),
                 ),
                 child: child,
               );
@@ -452,7 +472,7 @@ class _OverviewItemState extends State<_OverviewItem> with SingleTickerProviderS
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(widget.label, style: TextStyle(color: widget.color.withValues(alpha: 0x1F), fontWeight: FontWeight.w600, fontSize: 13)),
+                Text(widget.label, style: TextStyle(color: theme.colorScheme.onSurface.withValues(alpha: 0.88), fontWeight: FontWeight.w600, fontSize: 13)),
                 const SizedBox(height: 10),
                 Text(widget.value, style: TextStyle(color: widget.color.withValues(alpha: 0x1F), fontWeight: FontWeight.w700, fontSize: 16)),
               ],

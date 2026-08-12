@@ -19,7 +19,7 @@ class BalanceCard extends StatelessWidget {
     const primary = Color(0xFF174380);
     const onPrimary = Colors.white;
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+    final balanceColor = monthlyChange > 0 ? Color.fromARGB(255, 5, 141, 75) : Color(0xFFEA5F5F);
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(28),
@@ -70,27 +70,19 @@ class BalanceCard extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 8),
-              Text('R\$ ${balance.toStringAsFixed(2)}',
+              Text('€ ${balance.toStringAsFixed(2)}',
                   style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.w700)),
               const SizedBox(height: 6),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(24),
-                  border: Border.all(color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0x3D)),
-                  color: const Color(0xFF11151D),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(Icons.arrow_upward, color: Colors.white, size: 16),
-                    const SizedBox(width: 5),
-                    Text('+${monthlyChange.toStringAsFixed(1)}%',
-                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 12)),
-                    const SizedBox(width: 6),
-                    const Text('vs mês anterior', style: TextStyle(color: Colors.white70, fontSize: 11)),
-                  ],
-                ),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.arrow_upward, color: balanceColor, size: 16),
+                  const SizedBox(width: 5),
+                  Text('+${monthlyChange.toStringAsFixed(1)}%',
+                      style: TextStyle(color: balanceColor, fontWeight: FontWeight.w600, fontSize: 12)),
+                  const SizedBox(width: 6),
+                  const Text('vs mês anterior', style: TextStyle(color: Colors.white70, fontSize: 11)),
+                ],
               ),
             ],
           ),

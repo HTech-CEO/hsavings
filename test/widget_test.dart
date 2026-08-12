@@ -8,6 +8,7 @@
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:hsavings/main.dart';
+import 'package:hsavings/src/screens/financial_plan_screen.dart';
 
 void main() {
   testWidgets('Home screen loads', (WidgetTester tester) async {
@@ -15,6 +16,16 @@ void main() {
 
     expect(find.text('Olá, Gabriel 👋'), findsOneWidget);
     expect(find.text('Saldo total'), findsOneWidget);
-    expect(find.text('Transações recentes'), findsOneWidget);
+    expect(find.text('Visão geral'), findsOneWidget);
+  });
+
+  testWidgets('Financial plan screen opens from Plano navigation', (WidgetTester tester) async {
+    await tester.pumpWidget(const HSavingsApp());
+
+    await tester.tap(find.text('Plano'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(FinancialPlanScreen), findsOneWidget);
+    expect(find.text('Plano financeiro'), findsOneWidget);
   });
 }

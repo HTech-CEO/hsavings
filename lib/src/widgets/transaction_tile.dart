@@ -24,6 +24,9 @@ class TransactionTile extends StatelessWidget {
             height: 48,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(18),
+              gradient: LinearGradient(
+                colors: [transaction.iconColor.withValues(alpha: 0.16), theme.colorScheme.primary.withValues(alpha: 0.06)],
+              ),
               color: isDark ? const Color(0xFF11151D) : theme.colorScheme.surface,
               border: Border.all(color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0x3D)),
             ),
