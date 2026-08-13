@@ -268,145 +268,180 @@ class _FinancialPlanScreenState extends State<FinancialPlanScreen>
     final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF10141A) : const Color(0xFFF5F7FB),
+      backgroundColor: const Color(0xFF174380),
       body: SafeArea(
+        bottom: false,
         child: Column(
           children: [
+            // Header com fundo azul
+            Container(
+              decoration: const BoxDecoration(
+                color: Color(0xFF174380),
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(32),
+                  bottomRight: Radius.circular(32),
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 18),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: const [
+                              Text('Plano Financeiro 📊',
+                                  style: TextStyle(
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.w700,
+                                    color: Colors.white,
+                                  )),
+                            ],
+                          ),
+                        ),
+                        Container(
+                          width: 48,
+                          height: 48,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.white.withValues(alpha: 0.15),
+                            border: Border.all(color: Colors.white.withValues(alpha: 0xEB), width: 2),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0x14),
+                                blurRadius: 12,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: const Icon(Icons.pie_chart_rounded, color: Colors.white, size: 24),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 14),
+                    // Pie Chart pequeno no header
+                    _CompactPlanChart(
+                      sections: chartSections,
+                      animation: _chartAnimation,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            // Conteúdo principal com fundo arredondado
             Expanded(
-              child: CustomScrollView(
-                slivers: [
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(18, 16, 18, 10),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Container(
-                                width: 42,
-                                height: 42,
-                                decoration: BoxDecoration(
-                                  color: theme.colorScheme.primary.withValues(alpha: 0.12),
-                                  borderRadius: BorderRadius.circular(14),
-                                ),
-                                child: Icon(Icons.pie_chart_rounded, color: theme.colorScheme.primary),
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text('Plano financeiro', style: TextStyle(fontSize: 24, fontWeight: FontWeight.w800, color: theme.colorScheme.onSurface)),
-                                    Text('Distribuição do mês', style: TextStyle(fontSize: 13, color: theme.colorScheme.onSurfaceVariant)),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 18),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: _SummaryCard(
-                                  label: 'Rendimentos totais',
-                                  value: '€ ${totalIncome.toStringAsFixed(2).replaceAll('.', ',')}',
-                                  color: const Color(0xFF14B87A),
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: _SummaryCard(
-                                  label: 'Saldo restante',
-                                  value: '€ ${remainingBalance.toStringAsFixed(2).replaceAll('.', ',')}',
-                                  color: remainingBalance >= 0 ? const Color(0xFF1A73E8) : const Color(0xFFEA4F5D),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 18),
-                          _PlanChartCard(
-                            sections: chartSections,
-                            remainingBalance: remainingBalance,
-                            animation: _chartAnimation,
-                          ),
-                        ],
-                      ),
+              child: TweenAnimationBuilder<Offset>(
+                duration: const Duration(milliseconds: 700),
+                tween: Tween(begin: const Offset(0, 0.05), end: Offset.zero),
+                builder: (context, offset, child) {
+                  return Transform.translate(
+                    offset: offset * 100,
+                    child: child,
+                  );
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.surface,
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(32),
+                      topRight: Radius.circular(32),
                     ),
                   ),
-                  SliverList(
-                    delegate: SliverChildListDelegate([
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 18),
-                        child: Column(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+                    child: ListView(
+                      physics: const BouncingScrollPhysics(),
+                      padding: const EdgeInsets.only(bottom: 140),
+                      children: [
+                        const SizedBox(height: 6),
+                        Row(
                           children: [
-                            const SizedBox(height: 10),
-                            _CategoryGroupCard(
-                              title: 'Rendimentos',
-                              groupType: PlanGroupType.income,
-                              lines: _lines[PlanGroupType.income] ?? const [],
-                              availableBalance: remainingBalance,
-                              balanceForLine: (_) => remainingBalance,
-                              onAdd: () => _addLine(PlanGroupType.income),
-                              onRemove: (lineId) => _removeLine(lineId, PlanGroupType.income),
-                              onAmountChanged: (lineId, value) => _updateLineAmount(lineId, PlanGroupType.income, value),
-                              onTemplateChanged: (lineId, value) => _updateLineTemplate(lineId, PlanGroupType.income, value),
+                            Expanded(
+                              child: _SummaryCard(
+                                label: 'Rendimentos',
+                                value: '€ ${totalIncome.toStringAsFixed(2).replaceAll('.', ',')}',
+                                color: const Color(0xFF14B87A),
+                              ),
                             ),
-                            const SizedBox(height: 14),
-                            _CategoryGroupCard(
-                              title: 'Investimentos',
-                              groupType: PlanGroupType.investment,
-                              lines: _lines[PlanGroupType.investment] ?? const [],
-                              availableBalance: remainingBalance,
-                              balanceForLine: (_) => remainingBalance,
-                              onAdd: () => _addLine(PlanGroupType.investment),
-                              onRemove: (lineId) => _removeLine(lineId, PlanGroupType.investment),
-                              onAmountChanged: (lineId, value) => _updateLineAmount(lineId, PlanGroupType.investment, value),
-                              onTemplateChanged: (lineId, value) => _updateLineTemplate(lineId, PlanGroupType.investment, value),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: _SummaryCard(
+                                label: 'Saldo livre',
+                                value: '€ ${remainingBalance.toStringAsFixed(2).replaceAll('.', ',')}',
+                                color: remainingBalance >= 0 ? const Color(0xFF1A73E8) : const Color(0xFFEA4F5D),
+                              ),
                             ),
-                            const SizedBox(height: 14),
-                            _CategoryGroupCard(
-                              title: 'Poupanças',
-                              groupType: PlanGroupType.saving,
-                              lines: _lines[PlanGroupType.saving] ?? const [],
-                              availableBalance: remainingBalance,
-                              balanceForLine: (_) => remainingBalance,
-                              onAdd: () => _addLine(PlanGroupType.saving),
-                              onRemove: (lineId) => _removeLine(lineId, PlanGroupType.saving),
-                              onAmountChanged: (lineId, value) => _updateLineAmount(lineId, PlanGroupType.saving, value),
-                              onTemplateChanged: (lineId, value) => _updateLineTemplate(lineId, PlanGroupType.saving, value),
-                            ),
-                            const SizedBox(height: 14),
-                            _CategoryGroupCard(
-                              title: 'Despesas fixas',
-                              groupType: PlanGroupType.fixedExpense,
-                              lines: _lines[PlanGroupType.fixedExpense] ?? const [],
-                              availableBalance: remainingBalance,
-                              balanceForLine: (_) => remainingBalance,
-                              onAdd: () => _addLine(PlanGroupType.fixedExpense),
-                              onRemove: (lineId) => _removeLine(lineId, PlanGroupType.fixedExpense),
-                              onAmountChanged: (lineId, value) => _updateLineAmount(lineId, PlanGroupType.fixedExpense, value),
-                              onTemplateChanged: (lineId, value) => _updateLineTemplate(lineId, PlanGroupType.fixedExpense, value),
-                            ),
-                            const SizedBox(height: 14),
-                            _CategoryGroupCard(
-                              title: 'Despesas variáveis',
-                              groupType: PlanGroupType.variableExpense,
-                              lines: _lines[PlanGroupType.variableExpense] ?? const [],
-                              availableBalance: remainingBalance,
-                              balanceForLine: (_) => remainingBalance,
-                              onAdd: () => _addLine(PlanGroupType.variableExpense),
-                              onRemove: (lineId) => _removeLine(lineId, PlanGroupType.variableExpense),
-                              onAmountChanged: (lineId, value) => _updateLineAmount(lineId, PlanGroupType.variableExpense, value),
-                              onTemplateChanged: (lineId, value) => _updateLineTemplate(lineId, PlanGroupType.variableExpense, value),
-                            ),
-                            const SizedBox(height: 30),
                           ],
                         ),
-                      ),
-                    ]),
+                        const SizedBox(height: 18),
+                        _CategoryGroupCard(
+                          title: 'Rendimentos',
+                          groupType: PlanGroupType.income,
+                          lines: _lines[PlanGroupType.income] ?? const [],
+                          availableBalance: remainingBalance,
+                          balanceForLine: (_) => remainingBalance,
+                          onAdd: () => _addLine(PlanGroupType.income),
+                          onRemove: (lineId) => _removeLine(lineId, PlanGroupType.income),
+                          onAmountChanged: (lineId, value) => _updateLineAmount(lineId, PlanGroupType.income, value),
+                          onTemplateChanged: (lineId, value) => _updateLineTemplate(lineId, PlanGroupType.income, value),
+                        ),
+                        const SizedBox(height: 14),
+                        _CategoryGroupCard(
+                          title: 'Investimentos',
+                          groupType: PlanGroupType.investment,
+                          lines: _lines[PlanGroupType.investment] ?? const [],
+                          availableBalance: remainingBalance,
+                          balanceForLine: (_) => remainingBalance,
+                          onAdd: () => _addLine(PlanGroupType.investment),
+                          onRemove: (lineId) => _removeLine(lineId, PlanGroupType.investment),
+                          onAmountChanged: (lineId, value) => _updateLineAmount(lineId, PlanGroupType.investment, value),
+                          onTemplateChanged: (lineId, value) => _updateLineTemplate(lineId, PlanGroupType.investment, value),
+                        ),
+                        const SizedBox(height: 14),
+                        _CategoryGroupCard(
+                          title: 'Poupanças',
+                          groupType: PlanGroupType.saving,
+                          lines: _lines[PlanGroupType.saving] ?? const [],
+                          availableBalance: remainingBalance,
+                          balanceForLine: (_) => remainingBalance,
+                          onAdd: () => _addLine(PlanGroupType.saving),
+                          onRemove: (lineId) => _removeLine(lineId, PlanGroupType.saving),
+                          onAmountChanged: (lineId, value) => _updateLineAmount(lineId, PlanGroupType.saving, value),
+                          onTemplateChanged: (lineId, value) => _updateLineTemplate(lineId, PlanGroupType.saving, value),
+                        ),
+                        const SizedBox(height: 14),
+                        _CategoryGroupCard(
+                          title: 'Despesas fixas',
+                          groupType: PlanGroupType.fixedExpense,
+                          lines: _lines[PlanGroupType.fixedExpense] ?? const [],
+                          availableBalance: remainingBalance,
+                          balanceForLine: (_) => remainingBalance,
+                          onAdd: () => _addLine(PlanGroupType.fixedExpense),
+                          onRemove: (lineId) => _removeLine(lineId, PlanGroupType.fixedExpense),
+                          onAmountChanged: (lineId, value) => _updateLineAmount(lineId, PlanGroupType.fixedExpense, value),
+                          onTemplateChanged: (lineId, value) => _updateLineTemplate(lineId, PlanGroupType.fixedExpense, value),
+                        ),
+                        const SizedBox(height: 14),
+                        _CategoryGroupCard(
+                          title: 'Despesas variáveis',
+                          groupType: PlanGroupType.variableExpense,
+                          lines: _lines[PlanGroupType.variableExpense] ?? const [],
+                          availableBalance: remainingBalance,
+                          balanceForLine: (_) => remainingBalance,
+                          onAdd: () => _addLine(PlanGroupType.variableExpense),
+                          onRemove: (lineId) => _removeLine(lineId, PlanGroupType.variableExpense),
+                          onAmountChanged: (lineId, value) => _updateLineAmount(lineId, PlanGroupType.variableExpense, value),
+                          onTemplateChanged: (lineId, value) => _updateLineTemplate(lineId, PlanGroupType.variableExpense, value),
+                        ),
+                        const SizedBox(height: 30),
+                      ],
+                    ),
                   ),
-                ],
+                ),
               ),
             ),
           ],
@@ -571,6 +606,101 @@ class _PlanChartCard extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+}
+
+class _CompactPlanChart extends StatelessWidget {
+  final List<PieChartSectionData> sections;
+  final Animation<double> animation;
+
+  const _CompactPlanChart({
+    required this.sections,
+    required this.animation,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: animation,
+      builder: (context, _) {
+        final progress = sections.isEmpty || sections.every((section) => section.value <= 0)
+            ? 1.0
+            : animation.value.clamp(0.12, 1.0);
+
+        final animatedSections = sections
+            .map((section) => section.copyWith(
+                  value: section.value * progress,
+                  radius: 50, // Raio reduzido para o header
+                  titleStyle: const TextStyle(fontSize: 8, fontWeight: FontWeight.w700, color: Colors.white),
+                ))
+            .toList();
+
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // Pie Chart à esquerda
+            SizedBox(
+              width: 140,
+              height: 140,
+              child: PieChart(
+                PieChartData(
+                  sectionsSpace: 2,
+                  centerSpaceRadius: 30,
+                  startDegreeOffset: -90,
+                  centerSpaceColor: Colors.transparent,
+                  sections: animatedSections,
+                ),
+              ),
+            ),
+            const SizedBox(width: 32),
+            // Legenda e descrição à direita
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: const [
+                _CompactLegendChip(label: 'Rendimentos', color: Color(0xFF14B87A)),
+                SizedBox(height: 10),
+                _CompactLegendChip(label: 'Investimentos', color: Color(0xFF7C4DFF)),
+                SizedBox(height: 10),
+                _CompactLegendChip(label: 'Poupanças', color: Color(0xFF1A73E8)),
+                SizedBox(height: 10),
+                _CompactLegendChip(label: 'Despesas fixas', color: Color(0xFFEA4F5D)),
+                SizedBox(height: 10),
+                _CompactLegendChip(label: 'Despesas variáveis', color: Color(0xFFFFA726)),
+                SizedBox(height: 10),
+                _CompactLegendChip(label: 'Livre', color: Color(0xFFB0BEC5)),
+              ],
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _CompactLegendChip extends StatelessWidget {
+  final String label;
+  final Color color;
+
+  const _CompactLegendChip({required this.label, required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 8,
+          height: 8,
+          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+        ),
+        const SizedBox(width: 4),
+        Text(
+          label,
+          style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: Colors.white),
+        ),
+      ],
     );
   }
 }
